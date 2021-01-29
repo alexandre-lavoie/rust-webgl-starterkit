@@ -146,6 +146,8 @@ pub fn start() -> Result<(), JsValue> {
         // Clears Z-buffer.
         gl.clear_depth(1.);
 
+        // INSERT GL CODE HERE!
+
         // Loop!
         request_animation_frame(f.borrow().as_ref().unwrap());
     }) as Box<dyn FnMut(f32)>));
