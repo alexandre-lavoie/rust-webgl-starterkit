@@ -3,7 +3,7 @@ use wasm_bindgen::JsCast;
 use web_sys::{WebGl2RenderingContext, WebGlProgram, WebGlShader};
 
 /// Creates a WebGL shader from source.
-/// 
+///
 /// ```
 /// compile_shader(gl, include_str!("../resources/shaders/vertex.glsl"));
 /// ```
@@ -32,7 +32,7 @@ pub fn compile_shader(
 }
 
 /// Links the vertex + fragment shader to WebGL.
-/// 
+///
 /// ```
 /// link_program(gl, vert_shader, frag_shader);
 /// ```
@@ -63,7 +63,7 @@ pub fn link_program(
 }
 
 /// Prints to browser console.
-/// 
+///
 /// ```
 /// log!("Hello World!");
 /// ```
@@ -86,17 +86,25 @@ pub fn start() -> Result<(), JsValue> {
 
     // Gets the WebGL instance from the HTML canvas.
     let gl = canvas
-    .get_context("webgl2")
-    .unwrap()
-    .unwrap()
-    .dyn_into::<web_sys::WebGl2RenderingContext>()
-    .unwrap();
+        .get_context("webgl2")
+        .unwrap()
+        .unwrap()
+        .dyn_into::<web_sys::WebGl2RenderingContext>()
+        .unwrap();
 
     // Compiles vertex shader.
-    let vertex_shader = compile_shader(&gl, WebGl2RenderingContext::VERTEX_SHADER, include_str!("../resources/shaders/vertex.glsl"))?;
+    let vertex_shader = compile_shader(
+        &gl,
+        WebGl2RenderingContext::VERTEX_SHADER,
+        include_str!("../resources/shaders/vertex.glsl"),
+    )?;
 
     // Compiles fragment shader.
-    let framgent_shader = compile_shader(&gl, WebGl2RenderingContext::FRAGMENT_SHADER, include_str!("../resources/shaders/fragment.glsl"))?;
+    let framgent_shader = compile_shader(
+        &gl,
+        WebGl2RenderingContext::FRAGMENT_SHADER,
+        include_str!("../resources/shaders/fragment.glsl"),
+    )?;
 
     // Links vertex + fragment to a program.
     let program = link_program(&gl, &vertex_shader, &framgent_shader)?;
