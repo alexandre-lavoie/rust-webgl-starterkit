@@ -1,6 +1,8 @@
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use web_sys::{WebGl2RenderingContext, WebGlProgram, WebGlShader};
+use std::rc::Rc;
+use std::cell::RefCell;
 
 /// Creates a WebGL shader from source.
 ///
@@ -74,6 +76,14 @@ macro_rules! log {
     }
 }
 
+/// Method to loop in-sync with the browser.
+fn request_animation_frame(f: &Closure<dyn FnMut(f32)>) {
+    web_sys::window()
+        .expect("No window")
+        .request_animation_frame(f.as_ref().unchecked_ref())
+        .expect("Should register animation");
+}
+
 #[wasm_bindgen(start)]
 pub fn start() -> Result<(), JsValue> {
     // Panic warnings are sent to the web browswer console.
@@ -106,26 +116,42 @@ pub fn start() -> Result<(), JsValue> {
         include_str!("../resources/shaders/fragment.glsl"),
     )?;
 
+    // Prints hello world in the browser console.
+    // Just an example :)
+    log!("Hello World!");
+
     // Links vertex + fragment to a program.
     let program = link_program(&gl, &vertex_shader, &framgent_shader)?;
 
-    // Uses program.
-    gl.use_program(Some(&program));
+    // Pointer to lambda functions.
+    let f = Rc::new(RefCell::new(None));
 
-    // Adds Z-buffer.
-    gl.enable(WebGl2RenderingContext::DEPTH_TEST);
+    // Pointer to lambda functions.
+    let g = f.clone();
 
-    // Adds clearing.
-    gl.clear(WebGl2RenderingContext::COLOR_BUFFER_BIT);
+    // GL Update loop definition.
+    *g.borrow_mut() = Some(Closure::wrap(Box::new(move |_: f32| {
+        // Uses program.
+        gl.use_program(Some(&program));
 
-    // Clears the context to black.
-    gl.clear_color(0., 0., 0., 1.);
+        // Adds Z-buffer.
+        gl.enable(WebGl2RenderingContext::DEPTH_TEST);
 
-    // Clears Z-buffer.
-    gl.clear_depth(1.);
+        // Adds clearing.
+        gl.clear(WebGl2RenderingContext::COLOR_BUFFER_BIT);
 
-    // Prints hello world in the browser console.
-    log!("Hello World!");
+        // Clears the context to black.
+        gl.clear_color(0., 0., 0., 1.);
+
+        // Clears Z-buffer.
+        gl.clear_depth(1.);
+
+        // Loop!
+        request_animation_frame(f.borrow().as_ref().unwrap());
+    }) as Box<dyn FnMut(f32)>));
+
+    // GL Update.
+    request_animation_frame(g.borrow().as_ref().unwrap());
 
     Ok(())
 }
