@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  env:
+    container_name: rust-webgl-env
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '8080:8080'
+    volumes:
+      - ./resources:/app/resources
+    networks:
+      - rust-webgl-network
+
+networks:
+  rust-webgl-network:
+    driver: bridge
