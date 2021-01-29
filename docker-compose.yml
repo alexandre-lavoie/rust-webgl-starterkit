@@ -9,6 +9,7 @@ services:
     ports:
       - '8080:8080'
     volumes:
+      - ./src:/app/src
       - ./resources:/app/resources
     networks:
       - rust-webgl-network

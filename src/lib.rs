@@ -62,6 +62,13 @@ pub fn link_program(
     }
 }
 
+#[macro_export]
+macro_rules! log {
+    ( $( $t:tt )* ) => {
+        web_sys::console::log_1(&format!( $( $t )* ).into());
+    }
+}
+
 #[wasm_bindgen(start)]
 pub fn start() -> Result<(), JsValue> {
     // Panic warnings are sent to the web browswer console.
@@ -103,6 +110,9 @@ pub fn start() -> Result<(), JsValue> {
 
     // Clears Z-buffer.
     gl.clear_depth(1.);
+
+    // Prints hello world in the browser console.
+    log!("Hello World!");
 
     Ok(())
 }
