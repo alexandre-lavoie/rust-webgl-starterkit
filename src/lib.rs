@@ -62,6 +62,11 @@ pub fn link_program(
     }
 }
 
+/// Prints to browser console.
+/// 
+/// ```
+/// log!("Hello World!");
+/// ```
 #[macro_export]
 macro_rules! log {
     ( $( $t:tt )* ) => {
